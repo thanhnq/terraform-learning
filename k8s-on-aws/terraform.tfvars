@@ -1,17 +1,17 @@
-region = "us-east-1"
+region = "ap-southeast-1"
 
 profile = "default"
 
-private_az = "us-east-1a"
+private_az = "ap-southeast-1a"
 
-public_az = "us-east-1b"
+public_az = "ap-southeast-1b"
 
 amis = {
-  "us-east-1"      = "ami-01ca03df4a6012157"
-  "ap-southeast-1" = "ami-0bfb8f6cdedb56577"
+  "us-east-1"      = "ami-06cf02a98a61f9f5e"
+  "ap-southeast-1" = "ami-056251cdd6fd1c8eb"
 }
 
-instance_private_key = "~/.ssh/k8s_on_aws.key"
+instance_private_key = "~/.ssh/k8s_on_aws"
 
 instance_public_key = "~/.ssh/k8s_on_aws.pub"
 

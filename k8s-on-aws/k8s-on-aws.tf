@@ -12,15 +12,6 @@ resource "aws_vpc" "k8s_on_aws" {
   }
 }
 
-resource "aws_subnet" "vip" {
-  vpc_id            = aws_vpc.k8s_on_aws.id
-  cidr_block        = "10.0.0.0/24"
-  availability_zone = var.private_az
-  tags = {
-    Name = "k8s_vpc_vip_subnet"
-  }
-}
-
 resource "aws_subnet" "private" {
   vpc_id            = aws_vpc.k8s_on_aws.id
   cidr_block        = "10.0.1.0/24"
@@ -90,11 +81,6 @@ resource "aws_route_table_association" "private_route_table_association" {
   route_table_id = aws_route_table.private_route_table.id
 }
 
-resource "aws_route_table_association" "vip_route_table_association" {
-  subnet_id      = aws_subnet.vip.id
-  route_table_id = aws_route_table.private_route_table.id
-}
-
 resource "aws_key_pair" "k8s_on_aws" {
   key_name   = "k8s_on_aws"
   public_key = file(var.instance_public_key)
@@ -150,25 +136,6 @@ resource "aws_security_group" "k8s_private_sg" {
   }
 }
 
-resource "aws_security_group" "k8s_master_sg" {
-  vpc_id = aws_vpc.k8s_on_aws.id
-  ingress {
-    from_port       = 6443
-    to_port         = 6443
-    protocol        = "tcp"
-    security_groups = [aws_security_group.bastion_sg.id]
-  }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  tags = {
-    Name = "k8s_vpc_k8s_master_sg"
-  }
-}
-
 resource "aws_instance" "bastion" {
   key_name                    = aws_key_pair.k8s_on_aws.key_name
   ami                         = var.amis[var.region]
@@ -209,7 +176,7 @@ resource "aws_instance" "master01" {
   key_name                    = aws_key_pair.k8s_on_aws.key_name
   ami                         = var.amis[var.region]
   instance_type               = "t2.medium"
-  vpc_security_group_ids      = [aws_security_group.k8s_private_sg.id, aws_security_group.k8s_master_sg.id]
+  vpc_security_group_ids      = [aws_security_group.k8s_private_sg.id]
   availability_zone           = var.private_az
   subnet_id                   = aws_subnet.private.id
   associate_public_ip_address = false
@@ -219,9 +186,9 @@ resource "aws_instance" "master01" {
 }
 
 resource "aws_network_interface" "master01_vip" {
-  subnet_id = aws_subnet.vip.id
+  subnet_id = aws_subnet.private.id
   //private_ips     = ["10.0.0.50"]
-  security_groups = [aws_security_group.k8s_private_sg.id, aws_security_group.k8s_master_sg.id]
+  security_groups = [aws_security_group.k8s_private_sg.id]
   attachment {
     instance     = aws_instance.master01.id
     device_index = 1
@@ -239,7 +206,7 @@ resource "aws_instance" "master02" {
   key_name                    = aws_key_pair.k8s_on_aws.key_name
   ami                         = var.amis[var.region]
   instance_type               = "t2.medium"
-  vpc_security_group_ids      = [aws_security_group.k8s_private_sg.id, aws_security_group.k8s_master_sg.id]
+  vpc_security_group_ids      = [aws_security_group.k8s_private_sg.id]
   availability_zone           = var.private_az
   subnet_id                   = aws_subnet.private.id
   associate_public_ip_address = false
@@ -249,9 +216,9 @@ resource "aws_instance" "master02" {
 }
 
 resource "aws_network_interface" "master02_vip" {
-  subnet_id = aws_subnet.vip.id
+  subnet_id = aws_subnet.private.id
   //private_ips     = ["10.0.0.50"]
-  security_groups = [aws_security_group.k8s_private_sg.id, aws_security_group.k8s_master_sg.id]
+  security_groups = [aws_security_group.k8s_private_sg.id]
   attachment {
     instance     = aws_instance.master02.id
     device_index = 1
