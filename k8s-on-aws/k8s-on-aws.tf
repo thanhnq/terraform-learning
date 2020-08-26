@@ -186,8 +186,7 @@ resource "aws_instance" "master01" {
 }
 
 resource "aws_network_interface" "master01_vip" {
-  subnet_id = aws_subnet.private.id
-  //private_ips     = ["10.0.0.50"]
+  subnet_id       = aws_subnet.private.id
   security_groups = [aws_security_group.k8s_private_sg.id]
   attachment {
     instance     = aws_instance.master01.id
@@ -216,8 +215,7 @@ resource "aws_instance" "master02" {
 }
 
 resource "aws_network_interface" "master02_vip" {
-  subnet_id = aws_subnet.private.id
-  //private_ips     = ["10.0.0.50"]
+  subnet_id       = aws_subnet.private.id
   security_groups = [aws_security_group.k8s_private_sg.id]
   attachment {
     instance     = aws_instance.master02.id
