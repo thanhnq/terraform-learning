@@ -1,0 +1,6 @@
+[k8s-servers]
+master01 ansible_ssh_host=master01.int.easycredit.vn
+master02 ansible_ssh_host=master02.int.easycredit.vn
+worker01 ansible_ssh_host=worker01.int.easycredit.vn
+worker02 ansible_ssh_host=worker02.int.easycredit.vn
+worker03 ansible_ssh_host=worker03.int.easycredit.vn

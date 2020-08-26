@@ -29,4 +29,4 @@ variable "instance_public_key" {
 
 variable "instance_user" {
   default = "ec2-user"
-} 
+}
